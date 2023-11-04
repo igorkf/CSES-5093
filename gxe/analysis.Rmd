@@ -1,5 +1,5 @@
 ---
-title: "Genotype by Environment (GxE) interaction"
+title: "Genotype-by-Environment Interaction (GEI)"
 author: "Igor Kuivjogi Fernandes"
 date: "`r Sys.Date()`"
 bibliography: references.bib
@@ -16,16 +16,16 @@ dropsPheno$geno.panel <- NULL
 dropsTD <- statgenSTA::createTD(data = dropsPheno, genotype = "Variety_ID", trial = "Experiment")
 ```
 
-## Introduction
+# Introduction
 
-## Methodology
+# Methodology
 
-### Phenotypic Information
+## Phenotypic Information
 
 A data set from the European Union project called DROPS (DROught-tolerant yielding PlantS) was used in this study (<https://cordis.europa.eu/project/id/244374>). A panel of 256 maize hybrids was grown with two water regimes (irrigated or rainfed), in seven fields in 2012 and 2013, respectively, spread along a climatic transect from western to eastern Europe, plus one site in Chile in 2013. The panel resulted in 28 experiments defined as the combination of one year, one site and one water regime, with two and three repetitions for rainfed and irrigated treatments, respectively. A detailed environmental characterization was carried out, with hourly records of micro-meteorological data and soil water status, and associated with precise measurement of phenology. Grain yield and its components were measured at the end of the experiment. A total of 10 environments were selected from the full data set, two for each of the five main environmental scenarios (well watered and cool, well deficit and hot, well watered and hot, well deficit and hot in the day, and well watered and hot in the day), that were identified in the data, with 246 maize hybrids remaining. The trait analysed was the grain yield in tons per hectare (t/ha). Moreover, a classification of the genotypes in four genetic groups (Iodent, Lancaster, Stiff Stalk, and Other) was defined. The data is available at <https://doi.org/10.15454/IASSTN> [@millet2019].
 
-### Models
-#### Mixed effects model
+## Models
+### Mixed effects model
 <!-- grain.yield ~ scenarioFull + scenarioFull:trial + (1 | genotype) + (1 | genotype:scenarioFull) -->
 Multi-environment trial (MET) model was adjusted as follows:
 \begin{align} \label{mod1}
@@ -33,38 +33,30 @@ Multi-environment trial (MET) model was adjusted as follows:
 \end{align}
 where $Y$ is the grain yield, $\mu$ if the intercept, $S$ is the fixed effect of the scenario, $(S)t$ is the fixed effect of trial nested within scenario, $\mathbf{G}$ is the random effect of genotype, $\mathbf{GS}$ is the random effect of the genotype-by-scenario interaction, and $\mathbf{\varepsilon}$ is the residual effect.
 
-#### Fully random effects model
+### Fully random effects model
 A second model was adjusted, similar to model (\ref{mod1}), but with all terms as random effects to explore the different sources of variation. 
 
-#### Fully fixed effects model
+### Fully fixed effects model
 A third model was performed, similar to model (\ref{mod1}), but with all terms as fixed effect, which consists of an Analysis of Variance (ANOVA) -- used to check the significance of treatments such as water availability and temperature (i.e. the $S$ effect).
 
-#### Finaly-Wilkinson Analysis
+### Finlay-Wilkinson Analysis
 The Finlay-Wilkinson Analysis [@finlay1963] describes GEI by the heterogeneity of the slopes of a regression of individual genotypic performance on an environmental index. The environmental index is the average of all genotypes in an environment. The intercept expresses general performance across all environments, the slope represents adaptability, and the residuals may indicate a measure for stability.
 
 The model fitted in the analysis was:
-\begin{align}
+\begin{align} \label{finlay}
   y_{ij} = \mu + G_i + \beta_i t_j + \varepsilon_{ij}
 \end{align}
 where $y_{ij}$ is the grain yield of genotype $i$ in trial (environment) $j$, $\mu$ is the general mean, $G_i$ is the genotypic effect, $\beta_i$ a sensitivity parameter, $t_j$ the trial effect, and $\varepsilon_{ij}$ the residual term.
 
-## Results
+The model (\ref{finlay}) is fitted using an alternating regression algorithm. First, using starting values, $\beta_i$, $G_i$, and $t_j$ are estimated. Next, $t_j$ is assumed known and $\beta_i$ and $G_i$ are estimated. This process is continued until convergence, i.e. until the change in $\beta_i$ between iterations is less then a specified tolerance (e.g. 0.001). When estimating parameters, missing observations are estimated as well.
 
-```{r}
-# traits relationships
-# pairs(dropsPheno[, c("grain.yield", "grain.number", "seed.size", "anthesis", "silking", "plant.height", "tassel.height", "ear.height")])
-```
-
-```{r}
-# plot(dropsTD, plotType = "box", traits = "grain.yield", colorTrialBy = "scenarioFull",
-#      orderBy = "descending")
-```
+# Results
 
 <!-- question 3: How much of the variance is explained by each variable? -->
 
 The following table, calculated from the fully random effects model, shows the variance components and the variance explained by each variable:
 
-```{r, warning = F}
+```{r, warning = F, message = F}
 dropsVarComp <- gxeVarComp(TD = dropsTD, trait = "grain.yield", nestingFactor = "scenarioFull")
 varcomp <- dropsVarComp$fullRandVC
 varcomp <- round(varcomp, 3)
@@ -75,7 +67,7 @@ varcomp
 
 <!-- question 1: What are the major genetic and nongenetic factors that are affecting the phenotypic variance? -->
 
-The major nongenetic effect is `scenarioFull`, which is the environmental scenario, and explains 75.5% of the total variability. The major genetic effect is `genotype`, and explains 11.6% of the total variability.
+The major nongenetic effect is `scenarioFull`, which is the environmental scenario, and explains 75.5% of the total phenotypic variability. The major genetic effect is `genotype`, and explains 11.6% of the total phenotypic variability.
 
 An ANOVA table was also provided from the fully fixed effects model:
 
@@ -91,9 +83,13 @@ The water availability and temperature (the term `scenarioFull`) was significant
 
 From the variance components table of the fully random effects model, to analyse how much of the phenotypic variability is due to genetic effect, the heritability was calculated based on @atlin2000, and showed a value of `r herit(dropsVarComp)`.
 
+
+<!-- question 5: Which environments have the highest and lowest environmental effects? -->
+
+From the Finlay-Wilkinson Analysis it is possible to check the environmental effects per trial. For example, `Gai12W` showed the highest environmental effect (4.291), whereas Cra12R had the lowest environmental effect (-5.417). The other environmental effect can be seen in the following table: 
 ```{r}
 dropsFW <- gxeFw(TD = dropsTD, trait = "grain.yield")
-dropsFW
+dropsFW$envEffs[order(dropsFW$envEffs$EnvEff, decreasing = T), ]
 ```
 
 
