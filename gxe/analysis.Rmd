@@ -63,6 +63,7 @@ where $y_{ij}$ is the grain yield of genotype $i$ in trial (environment) $j$, $\
 
 The model in (\ref{finlay}) is fitted using an alternating regression algorithm. First, using starting values, $\beta_i$, $G_i$, and $t_j$ are estimated. Next, $t_j$ is assumed known and $\beta_i$ and $G_i$ are estimated. This process is continued until convergence, i.e. until the change in $\beta_i$ between iterations is less then a specified tolerance (e.g. 0.001). When estimating parameters, missing observations are estimated as well.
 
+
 # Results
 
 <!-- question 3: How much of the variance is explained by each variable? -->
@@ -117,5 +118,29 @@ p1 + labs(x = "Environmental mean")
 In the plot above, the genotype `Lo1251` has a larger slope (larger angle to the x-axis) than the less sensitive genotype. The x-axis represents the environmental mean, and there are 10 points, one point per trial. As the environmental mean increases, the grain yield for genotype `Lo1251` increases in a larger extent when compared to the genotype `F252`. 
 
 It is interesting to note that genotypes with slopes > 1 (e.g. `Lo1251`) have higher than average sensitivity, and genotypes with slopes < 1 (e.g. `F252`) have lower than average sensitivity because the mean of slopes is 1, i.e., $\frac{1}{n} \sum_{i=1}^{n} \beta_i = 1$, $i = 1, ..., 246$.
+
+In addition to check sensitivities of genotypes, it is important to check grain yield variability across the environments.    
+<!-- question 7: Which inferences can you make regarding the overall grain yield variation across environments in each genetic group? -->
+```{r, fig.width = 10, fig.asp = 0.5}
+ggplot(dropsPheno, aes(x = geneticGroup, y = grain.yield, fill = geneticGroup)) +
+  stat_boxplot(geom = "errorbar") + 
+  geom_boxplot() +
+  facet_wrap(~scenarioFull)
+```
+When looking for the different scenarios, the grain yield variation is lower for water-deficient hot environment, and also the grain yield shows lower values (ranging from almost 0 to 5). For well-watered cool environment, the `Other` genetic group has a larger variability than `Iodent`, `Lancaster`, and `Stiff Stalk`. Regardless of the scenario, the genetic group `Other` shows lower median than all other genetic groups, except for the water-deficient hot environment. 
+
+```{r}
+with(dropsPheno, interaction.plot(geneticGroup, scenarioFull, grain.yield))
+```
+
+From the interaction plot, the well-watered cool environment shows the highest mean grain yield values for all genetic groups. Moreover, the well-watered scenarios (`Cool`, `Hot(Day)`, and `Hot`) all have higher grain yield mean than the water-deficient scenarios.
+
+A Tukey test, using a significance level of $\alpha = 0.05$, shows that there are differences in grain yield across environments in each genetic group, except for the contrast `WW.Hot - WD.Hot(Day)` in the genetic group `Iodent`, which is the mean difference in well-wattered hot and well-deficient hot(day), that showed a p-value of $0.999$.       
+```{r}
+scenario_gen <- aov(grain.yield ~ scenarioFull * geneticGroup, data = dropsPheno)
+knitr::kable(emmeans::emmeans(scenario_gen, pairwise ~ scenarioFull | geneticGroup)$contrasts)
+```
+
+
 
 ## References
