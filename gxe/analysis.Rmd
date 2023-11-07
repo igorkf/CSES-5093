@@ -19,6 +19,15 @@ dropsTD <- statgenSTA::createTD(data = dropsPheno, genotype = "Variety_ID", tria
 
 # Introduction
 
+## Genotype-by-environment interaction
+...
+
+## Finlay-Wilkinson Analysis
+...
+
+## Stability metrics
+A genotype is stable when its performance is unchanged regardless of any variation in the environmental conditions [@hill1998].
+
 # Methodology
 
 ## Experimental settings  
@@ -99,7 +108,7 @@ knitr::kable(dropsFW$envEffs[order(dropsFW$envEffs$EnvEff, decreasing = T), ], a
 ```
 
 <!-- question 6: Which genotypes are the most sensitive and what does this metric represent? Include a plot comparing the genotype with the highest and lowest sensitivity. -->
-In addition to analysing environmental effects, it is also possible to explore the sensitivity of genotypes. In the Finlay-Wilkinson model (\ref{finlay}), the slopes $\beta_i$ are a measure for the sensitivity of genotype $i$ to the improvement in the quality of the environment $j$ (also called adaptability), where there is one slope per genotype (in this case 246 slopes). In other words, adaptability is the ability of a genotype to respond positively to changes in environments @chloupek2005. The following table shows the least and the most sensitive genotypes:
+In addition to analysing environmental effects, it is also possible to explore the sensitivity of genotypes. In the Finlay-Wilkinson model (\ref{finlay}), the slopes $\beta_i$ are a measure for the sensitivity of genotype $i$ to the improvement in the quality of the environment $j$ (also called adaptability), where there is one slope per genotype (in this case 246 slopes). In other words, adaptability is the ability of a genotype to respond positively to changes in environments [@chloupek2005]. The following table shows the least and the most sensitive genotypes:
 ```{r}
 sens <- dropsFW$estimates[order(dropsFW$estimates$Sens), ]
 knitr::kable(sens[c(1, nrow(sens)), ], align = "c", row.names = F)
@@ -142,6 +151,11 @@ scenario_gen <- aov(grain.yield ~ scenarioFull + scenarioFull:Experiment + genet
 knitr::kable(emmeans::emmeans(scenario_gen, pairwise ~ scenarioFull | geneticGroup)$contrasts)
 ```
 
+<!-- question 8: Which genotypes have the highest and lowest cultivar-superiority? What does this metric represent? -->
+Stability measures were calculated, namely cultivar-superiority [@lin1988], Shukla's stability variance [@shukla1972], and Wricke's ecovalence stability coefficient [@wricke1962].
+```{r}
+dropsStab <- gxeStability(TD = dropsTD, trait = "grain.yield")
+```
 
 
 
