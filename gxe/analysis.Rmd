@@ -19,7 +19,7 @@ dropsTD <- statgenSTA::createTD(data = dropsPheno, genotype = "Variety_ID", tria
 # Introduction
 
 ## Genotype-by-environment interaction
-...
+Genotype-by-environment interaction (GxE) refers to the differential performance of individuals across environments (usually location-year combinations). This phenomenon requires breeders to test cultivars in a wide range of environments because GxE prevents any cultivar to be the best cultivar in every single environment. The lack of GxE occurs when the ranking of cultivars (top to bottom performances) does not change across different environments and the cultivars respond equally to the changing of environment. The non-crossover interaction occurs when the ranking does not change, but the response across cultivars differ among environments. Finally, a crossover interaction can occur either when the ranking changes but the response across cultivars is the same among environments, or the ranking changes as well the response to different environments differs [@bernardo2014].
 
 ## Finlay-Wilkinson analysis
 The Finlay-Wilkinson analysis [@finlay1963] describes GxE by the heterogeneity of the slopes of a regression of individual genotypic performance on an environmental index, where the environmental index is the average of all genotypes in an environment. The intercept expresses general performance across all environments, the slope represents adaptability, and the residuals may indicate a measure for stability.
@@ -181,7 +181,7 @@ knitr::kable(head(wricke, 5), align = "c", row.names = F)
 knitr::kable(tail(wricke, 5), align = "c", row.names = F)
 ```
 
-Interestingly, there is no consensus among the three stability measures -- each measure identifies five different highest or lowest genotypes.
+Interestingly, there is no consensus among the three stability measures -- each measure identified five different highest or lowest genotypes.
 ```{r, include = F}
 intersect(head(superiority, 5)$Genotype, head(static, 5)$Genotype)
 intersect(head(superiority, 5)$Genotype, head(wricke, 5)$Genotype)
@@ -191,4 +191,4 @@ intersect(tail(superiority, 5)$Genotype, tail(wricke, 5)$Genotype)
 ```
 
 
-## References
+# References
