@@ -1,5 +1,5 @@
 ---
-title: "Genotype-by-Environment Interaction (GEI)"
+title: "Genotype-by-Environment Interaction (GxE)"
 author: "Igor Kuivjogi Fernandes"
 date: "`r Sys.Date()`"
 bibliography: references.bib
@@ -13,7 +13,6 @@ library(statgenGxE)
 library(ggplot2)
 
 data(dropsPheno)
-dropsPheno$geno.panel <- NULL
 dropsTD <- statgenSTA::createTD(data = dropsPheno, genotype = "Variety_ID", trial = "Experiment")
 ```
 
@@ -22,11 +21,11 @@ dropsTD <- statgenSTA::createTD(data = dropsPheno, genotype = "Variety_ID", tria
 ## Genotype-by-environment interaction
 ...
 
-## Finlay-Wilkinson Analysis
-...
+## Finlay-Wilkinson analysis
+The Finlay-Wilkinson analysis [@finlay1963] describes GxE by the heterogeneity of the slopes of a regression of individual genotypic performance on an environmental index, where the environmental index is the average of all genotypes in an environment. The intercept expresses general performance across all environments, the slope represents adaptability, and the residuals may indicate a measure for stability.
 
 ## Stability metrics
-A genotype is stable when its performance is unchanged regardless of any variation in the environmental conditions [@hill1998].
+A genotype is stable when its performance is unchanged regardless of any variation in the environmental conditions [@hill1998], and there are different measures of stability. The cultivar-superiority [@lin1988] is a function of the sum of the squared differences between a cultivar's mean and the best cultivar's mean, where the sum is across trials. Genotypes with the smallest values of the superiority tend to be more stable, and closer to the best genotype in each environment. The Shukla's stability variance [@shukla1972] is defined as the variance around the genotype's phenotypic mean across all environments and provides a measure of the consistency of the genotype, without accounting for its performance. It is a static stability measure. Finally, the Wricke's ecovalence stability coefficient [@wricke1962] is the contribution of each genotype to the GxE sum of squares, in an unweighted analysis of the GxE means. A low value indicates that the genotype responds in a consistent manner to changes in environment (i.e. is stable from a dynamic point of view).
 
 # Methodology
 
@@ -61,10 +60,8 @@ A fully fixed effects model was performed to check the significance of treatment
 where $Y$ is the grain yield, $\mu$ if the intercept, $S$ is the fixed effect of the scenario, $(S)t$ is the fixed effect of trial nested within scenario, $G$ is the fixed effect of genotype, $GS$ is the fixed effect of the genotype-by-scenario interaction, and $\mathbf{\varepsilon}$ is the residual effect with $\mathbf{e} \sim N(0, \sigma^2_e)$.
 
 
-### Finlay-Wilkinson
-The Finlay-Wilkinson Analysis [@finlay1963] describes GEI by the heterogeneity of the slopes of a regression of individual genotypic performance on an environmental index. The environmental index is the average of all genotypes in an environment. The intercept expresses general performance across all environments, the slope represents adaptability, and the residuals may indicate a measure for stability.
-
-The model fitted in the analysis was:
+### Finlay-Wilkinson model
+The model fitted in the Finlay-Wilkinson analysis was as follows:
 \begin{align} \label{finlay}
   y_{ij} = \mu + G_i + \beta_i t_j + e_{ij}
 \end{align}
@@ -76,7 +73,7 @@ The model in (\ref{finlay}) is fitted using an alternating regression algorithm.
 # Results
 
 <!-- question 3: How much of the variance is explained by each variable? -->
-The following table, calculated from the fully random effects model (\ref{randomeffects}), shows the variance components and the variance explained by each variable:
+The following table, calculated from the fully random effects model (\ref{randomeffects}), shows the variance components and the variance explained by each term:
 ```{r, warning = F, message = F}
 dropsVarComp <- gxeVarComp(TD = dropsTD, trait = "grain.yield", nestingFactor = "scenarioFull")
 varcomp <- dropsVarComp$fullRandVC
@@ -98,7 +95,7 @@ knitr::kable(dropsVarComp$aovFullFixedMod, align = "c")
 The water availability and temperature (the term `scenarioFull`) was significant at an significance level of $\alpha = 0.05$, thus grain yield was affected by the effect of water availability and temperature.
 
 <!-- question 4: What is the heritability of grain yield in this study? -->
-From the variance components table of the fully random effects model (\ref{randomeffects}), to analyse how much of the phenotypic variability is due to genetic effect, the heritability (calculated based on @atlin2000) and showed a value of `r herit(dropsVarComp)`.
+From the variance components table of the fully random effects model (\ref{randomeffects}), to analyse how much of the phenotypic variability is due to genetic effect, the heritability (based on @atlin2000) was calculated with a value of `r herit(dropsVarComp)`.
 
 <!-- question 5: Which environments have the highest and lowest environmental effects? -->
 From the Finlay-Wilkinson Analysis it is possible to check the environmental effects per trial. For example, `Gai12W` showed the highest environmental effect (4.291), whereas `Cra12R` had the lowest environmental effect (-5.417). The other environmental effects can be seen in the following table: 
@@ -158,6 +155,40 @@ dropsStab <- gxeStability(TD = dropsTD, trait = "grain.yield")
 ```
 
 
+The lowest the cultivar-superiority, the more stable is the cultivar. The following tables show the 5 genotypes with highest and lowest cultivar-superiority:
+```{r}
+superiority <- dropsStab$superiority
+colnames(superiority) <- c("Genotype", "Mean", "Cultivar-superiority")
+knitr::kable(head(superiority, 5), align = "c", row.names = F)
+knitr::kable(tail(superiority, 5), align = "c", row.names = F)
+```
+
+Likewise, genotypes with lower Shukla's stability variance are considered as more stables (@afzal2021). The following tables show the 5 genotypes with highest and lowest Shukla's stability variance:
+```{r}
+static <- dropsStab$static
+colnames(static) <- c("Genotype", "Mean", "Shukla's")
+knitr::kable(head(static, 5), align = "c", row.names = F)
+knitr::kable(tail(static, 5), align = "c", row.names = F)
+```
+
+\newpage
+
+Similarly, a low value of Wricke's Ecovalence Stability Coefficient indicates that the genotype responds in a consistent manner to changes in environment. The following tables show the 5 genotypes with highest and lowest Wricke's Ecovalence Stability Coefficient:
+```{r}
+wricke <- dropsStab$wricke
+colnames(wricke) <- c("Genotype", "Mean", "Wricke's")
+knitr::kable(head(wricke, 5), align = "c", row.names = F)
+knitr::kable(tail(wricke, 5), align = "c", row.names = F)
+```
+
+Interestingly, there is no consensus among the three stability measures -- each measure identifies five different highest or lowest genotypes.
+```{r, include = F}
+intersect(head(superiority, 5)$Genotype, head(static, 5)$Genotype)
+intersect(head(superiority, 5)$Genotype, head(wricke, 5)$Genotype)
+
+intersect(tail(superiority, 5)$Genotype, tail(static, 5)$Genotype)
+intersect(tail(superiority, 5)$Genotype, tail(wricke, 5)$Genotype)
+```
 
 
 ## References
