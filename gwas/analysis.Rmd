@@ -1,0 +1,90 @@
+---
+title: "Genome-Wide Association Studies (GWAS) - Soybean response to off-target dicamba"
+author: "Igor Kuivjogi Fernandes"
+date: "`r Sys.Date()`"
+bibliography: references.bib
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = TRUE)
+
+source("http://zzlab.net/GAPIT/GAPIT.library.R")
+source("http://zzlab.net/GAPIT/gapit_functions.txt")
+
+pheno <- read.table("Dicamba_Score.txt", header = TRUE)
+geno <- read.table("DicambaSoy50K.hmp.txt", header = FALSE)
+```
+
+
+# Introduction
+
+
+# Methodology
+The off-target dicamba damage was measured in a scale ranging from 1 to 5, with 0.5 increments described by @vieira_diff.
+
+
+# Results
+```{r, warning = F, include = F}
+# https://zzlab.net/GAPIT/gapit_help_document.pdf
+model <- GAPIT(Y = pheno, G = geno, PCA.total = 3, model = "BLINK", Geno.View.output = T)
+```
+
+<!-- 1. What is the phenotypic distribution for the trait across all testing genotypes? Do we see a normal distribution and a good representation of all possible phenotypes? -->
+The following histogram shows the absolute frequency of adjusted off-target Dicamba score: 
+
+```{r}
+hist(pheno$Dicamba, xlab = "Adjusted off-target Dicamba score", main = "")
+```
+
+The response seems to be normally distributed. The adjusted score was calculated using a Best Unbiased Linear Estimate (BLUE). The original measures range from 1 to 5, with increments of 0.5, but the category "5" is not present. In fact, the minimum and maximum adjusted scores are `r min(pheno$Dicamba)` and `r max(pheno$Dicamba)`, respectively.
+
+<!-- 2. What is the molecular marker density? Is it well distributed across all 20 chromosomes? -->
+There are 20 chromosomes, and the marker density across chromosomes was checked:
+
+```{r, fig.width = 8, fig.asp = 0.5}
+marker_density <- sort(prop.table(table(geno[-1, "V3"])))
+plot(marker_density, xlab = "Chromossome", ylab = "Density")
+abline(h = 1 / length(marker_density), col = "blue", lty = 2)
+```
+
+Although some chromosomes have more density than others, in general, the distribution of markers seems uniform across chromosomes. The dashed blue line represents the density if the distribution was strictly even ($\frac{1}{\# \text{chromosomes}} = \frac{1}{20} = 0.05$).
+
+
+<!-- 3. What are the significant marker-trait associations identified? Provide the marker name, chromosome, position, p-value, minor allele frequency, and LOD score. -->
+
+Two markers were identified as significant using significance level of $\alpha = 1 \times 10^{-6}$, as showed by the Manhattan plot: 
+
+```{r}
+knitr::include_graphics("GAPIT.Association.Manhattan_Geno.BLINK.Dicamba.pdf")
+```
+
+One marker is in chromosome 10, and another is in chromosome 19. The marker name, chromosome, position, p-value, minor allele frequency (MAF), and logarithm of odds (LOD) are as follows:
+```{r}
+sig_markers <- read.csv("GAPIT.Association.Filter_GWAS_results.csv")
+sig_markers <- sig_markers[, c("SNP", "Chr", "Pos", "P.value", "MAF")]
+sig_markers$LOD <- -log10(sig_markers$P.value)
+colnames(sig_markers) <- c("SNP", "Chromosome", "Position", "p-value", "MAF", "LOD")
+knitr::kable(sig_markers, align = "c", row.names = F)
+```
+
+
+
+<!-- 4. How much of the phenotypic variance is explained by the significant markers (R^2)? -->
+When looking at phenotypic variance explained ($R^2$), first marker (`ss715605561` on chromosome 10) explains about $15.1\%$ and second marker (`ss715635349` on chromosome 19) explains about $4.5\%$. The grey shaded are repesents the $95\%$ confidence interval for the QQ-plot under the null hypothesis of no association between the SNP and the
+trait
+
+
+<!-- 5. Based on the QQ Plot, is the model well-fitted for this dataset?  -->
+A QQ-plot was produced to check goodness-of-fitness for the GWAS model:
+
+```{r}
+knitr::include_graphics("GAPIT.Association.QQ.BLINK.Dicamba.pdf")
+```
+
+The model seems to be well-fitted because the non-significant SNPs lie in the diagonal line, whereas two significant markers deviate from the diagonal line in the upper right section of the plot and most likely are associated with the trait.   
+
+<!-- 6. Based on the PCA, is the genetic diversity present in this population well distributed? -->
+
+
+# References
