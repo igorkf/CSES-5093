@@ -71,8 +71,7 @@ knitr::kable(sig_markers, align = "c", row.names = F)
 
 
 <!-- 4. How much of the phenotypic variance is explained by the significant markers (R^2)? -->
-When looking at phenotypic variance explained ($R^2$), first marker (`ss715605561` on chromosome 10) explains about $15.1\%$ and second marker (`ss715635349` on chromosome 19) explains about $4.5\%$. The grey shaded are repesents the $95\%$ confidence interval for the QQ-plot under the null hypothesis of no association between the SNP and the
-trait
+When looking at phenotypic variance explained ($R^2$), first marker (`ss715605561` on chromosome 10) explains about $15.1\%$ and second marker (`ss715635349` on chromosome 19) explains about $4.5\%$.
 
 
 <!-- 5. Based on the QQ Plot, is the model well-fitted for this dataset?  -->
@@ -82,7 +81,7 @@ A QQ-plot was produced to check goodness-of-fitness for the GWAS model:
 knitr::include_graphics("GAPIT.Association.QQ.BLINK.Dicamba.pdf")
 ```
 
-The model seems to be well-fitted because the non-significant SNPs lie in the diagonal line, whereas two significant markers deviate from the diagonal line in the upper right section of the plot and most likely are associated with the trait.   
+The model seems to be well-fitted because the non-significant SNPs lie in the diagonal line, whereas two significant markers deviate from the diagonal line in the upper right section of the plot and most likely are associated with the trait. The grey shaded area repesents the $95\%$ confidence interval for the QQ-plot under the null hypothesis of no association between the SNP and the trait.   
 
 <!-- 6. Based on the PCA, is the genetic diversity present in this population well distributed? -->
 
