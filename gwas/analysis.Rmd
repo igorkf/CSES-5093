@@ -6,6 +6,16 @@ bibliography: references.bib
 output: pdf_document
 ---
 
+# Introduction
+...
+
+# Methodology
+## Experimental settings
+The data set in this study comprised a total of 382 genetically diverse soybean accessions, a subset of the USDA Soybean Germplasm Collection, originated from 15 countries, with maturity groups ranging from 3 to 5. The collection was genotyped with the SoySNP50K BeadChip [@song2013], with approximatelly 50000 markers, and the data has been made available by the authors [@song2015] at SoyBase Genetics and Genomics Database (http://soybase.org/snps/download.php).
+
+The trait was the soybean response to off-target dicamba. The off-target dicamba damage was measured in a scale ranging from 1 to 5, with 0.5 increments as described by @vieira_diff. Across the three testing environments, the frequency of off-target dicamba damage scores was consistent and normally distributed with over 45% of the observations between scores of 2 and 3 (moderately tolerant) and 39% between 3 and 3.5 (moderately susceptible). About 8% of the observations were either under the score of 2 (highly tolerant) or above the score of 4 (highly susceptible).
+
+
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, include = TRUE)
 
@@ -15,13 +25,6 @@ source("http://zzlab.net/GAPIT/gapit_functions.txt")
 pheno <- read.table("Dicamba_Score.txt", header = TRUE)
 geno <- read.table("DicambaSoy50K.hmp.txt", header = FALSE)
 ```
-
-
-# Introduction
-
-
-# Methodology
-The off-target dicamba damage was measured in a scale ranging from 1 to 5, with 0.5 increments described by @vieira_diff.
 
 
 # Results
