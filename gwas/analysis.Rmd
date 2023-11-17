@@ -11,9 +11,10 @@ output: pdf_document
 
 # Methodology
 ## Experimental settings
-The data set in this study comprised a total of 382 genetically diverse soybean accessions, a subset of the USDA Soybean Germplasm Collection, originated from 15 countries, with maturity groups ranging from 3 to 5. The collection was genotyped with the SoySNP50K BeadChip [@song2013], with approximatelly 50000 markers, and the data has been made available by the authors [@song2015] at SoyBase Genetics and Genomics Database (http://soybase.org/snps/download.php).
+The data set in this study comprised a total of 382 genetically diverse soybean accessions, a subset of the USDA Soybean Germplasm Collection, originated from 15 countries, with maturity groups ranging from 3 to 5. The collection was genotyped with the SoySNP50K BeadChip [@song2013], with approximatelly 50000 markers, and the data has been made available by the authors [@song2015] at SoyBase Genetics and Genomics Database (http://soybase.org/snps/download.php). Field trials were conducted in three environments for two years (2020-2021) using a randomized complete block design with two replicates at Portageville, MO and Clarkton, MO. The trait was the soybean response to off-target dicamba. The off-target dicamba damage was measured in a scale ranging from 1 to 5, with 0.5 increments as described by @vieira_diff. After that, best linear unbiased estimates (BLUEs) were calculated to account for experimental design. Across the three testing environments, the frequency of adjusted off-target dicamba damage scores was consistent and normally distributed with over 45% of the observations between scores of 2 and 3 (moderately tolerant) and 39% between 3 and 3.5 (moderately susceptible). About 8% of the observations were either under the score of 2 (highly tolerant) or above the score of 4 (highly susceptible). More details about the data sets can be found in @vieira2022.
 
-The trait was the soybean response to off-target dicamba. The off-target dicamba damage was measured in a scale ranging from 1 to 5, with 0.5 increments as described by @vieira_diff. Across the three testing environments, the frequency of off-target dicamba damage scores was consistent and normally distributed with over 45% of the observations between scores of 2 and 3 (moderately tolerant) and 39% between 3 and 3.5 (moderately susceptible). About 8% of the observations were either under the score of 2 (highly tolerant) or above the score of 4 (highly susceptible).
+## Model
+To identify possible candidate genes associated with off-target dicamba, a genome-wide association studies (GWAS) model was fitted using BLINK [@huang2018] through the GAPIT 3 package [@wang2021]. BLINK eliminates the assumption that causal genes are distributed equally across the genome to improve statistical power by using the linkage disequilibrium (LD) method. 
 
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -40,7 +41,7 @@ The following histogram shows the absolute frequency of adjusted off-target Dica
 hist(pheno$Dicamba, xlab = "Adjusted off-target Dicamba score", main = "")
 ```
 
-The response seems to be normally distributed. The adjusted score was calculated using a Best Unbiased Linear Estimate (BLUE). The original measures range from 1 to 5, with increments of 0.5, but the category "5" is not present. In fact, the minimum and maximum adjusted scores are `r min(pheno$Dicamba)` and `r max(pheno$Dicamba)`, respectively.
+The adjusted response seems to be normally distributed. The original measures range from 1 to 5, with increments of 0.5, but the category "5" is not present in this adjusted response variable. In fact, the minimum and maximum adjusted scores are `r min(pheno$Dicamba)` and `r max(pheno$Dicamba)`, respectively.
 
 <!-- 2. What is the molecular marker density? Is it well distributed across all 20 chromosomes? -->
 There are 20 chromosomes, and the marker density across chromosomes was checked:
@@ -84,9 +85,13 @@ A QQ-plot was produced to check goodness-of-fitness for the GWAS model:
 knitr::include_graphics("GAPIT.Association.QQ.BLINK.Dicamba.pdf")
 ```
 
-The model seems to be well-fitted because the non-significant SNPs lie in the diagonal line, whereas two significant markers deviate from the diagonal line in the upper right section of the plot and most likely are associated with the trait. The grey shaded area repesents the $95\%$ confidence interval for the QQ-plot under the null hypothesis of no association between the SNP and the trait.   
+The model seems to be well-fitted because the non-significant SNPs lie in the diagonal line, whereas two significant markers deviate from the diagonal line in the upper right section of the plot and most likely are associated with the trait. The grey shaded area represents the $95\%$ confidence interval for the QQ-plot under the null hypothesis of no association between the SNP and the trait.   
 
 <!-- 6. Based on the PCA, is the genetic diversity present in this population well distributed? -->
+```{r}
+
+```
+
 
 
 # References
